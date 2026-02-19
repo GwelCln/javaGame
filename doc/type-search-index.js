@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"monde2","l":"Main"},{"p":"map","l":"Map"},{"p":"map","l":"NotAllowedSizeException"},{"p":"map","l":"OutOfMapException"},{"p":"player","l":"Player"}];updateSearchResults();
