@@ -11,7 +11,7 @@ public class Map {
 		* @author Collin Gweltaz
 		* @version 1.0
 		*/
-    private int lenght;  // longueur
+    private int height;  // hauteur height
     private int widht; // Largeur
     private char[][] tab; // tableau contenant les caractères
     private final Player p;
@@ -19,37 +19,37 @@ public class Map {
     private int y; // Player y coordonate
 
     /**
-     * Constructor of Map, it create a map with a widht and a lenght defined in the parameter. 
-     * The wall are included in the widht and the lenght.
+     * Constructor of Map, it create a map with a widht and a height defined in the parameter. 
+     * The wall are included in the widht and the height.
      * The function also take a player that is placed at a (x,y) position defined in the parameters
      * @param widht widht of the map, each unit equal one ascii character
-     * @param lenght lenght of the map, each unit equal one ascii character
+     * @param height height of the map, each unit equal one ascii character
      * @param p Player that you want to put on the map
      * @param x x position that the player will have at the beginning of the game
      * @param y y position that the player will have at the beginning of the game
      * @param structCoord array of the different coordonate of the structure loaded in the map
      * @param struct array of the structure loaded in the map
-     * @throws NotAllowedSizeException If the widht or the lenght is less or equal to 2.
+     * @throws NotAllowedSizeException If the widht or the height is less or equal to 2.
      * @throws OutOfMapException If the coordonate (x,y) are on or out of the map's walls
      * @throws PlayerNullException If a player passed in argument is null this exception is raised.
      */
-    public Map(int widht, int lenght, Player p, int x, int y, int[][] structCoord ,Structure[] struct) throws NotAllowedSizeException, OutOfMapException, PlayerNullException{
-        if(widht <3 || lenght<3){
+    public Map(int height, int widht, Player p, int x, int y ,Structure[] struct) throws NotAllowedSizeException, OutOfMapException, PlayerNullException{
+        if(widht <3 || height<3){
             throw new NotAllowedSizeException("Erreur dans les arguments la map ne peut pas être initialiser.");
         }
-        else if( x<=0 || x >= lenght-1 || y<=0 || y>= widht-1){
+        else if( x<=0 || x >= height-1 || y<=0 || y>= widht-1){
             throw new OutOfMapException("Erreur dans les arguments le joueur à des coordonnés impossibles.");
         }
         else if(p == null){
             throw new PlayerNullException("Erreur impossible de passé un joueur null en argument");
         }
         else{
-            this.lenght = lenght;
+            this.height = height;
             this.widht = widht;
-            this.tab = new char[this.widht][this.lenght];
+            this.tab = new char[this.height][this.widht];
             for(int i=0;i<widht;i++){
-                for(int j=0;j<lenght;j++){
-                    if(i==0 || j==lenght-1 || j==0 || i==widht-1){
+                for(int j=0;j<height;j++){
+                    if(i==0 || j==height-1 || j==0 || i==widht-1){
                         this.tab[i][j] = '#';
                     }
                     else{
@@ -58,29 +58,29 @@ public class Map {
                 }
             }
 
+            
+            int total = struct[0].getNumberStruct();
 
-
-
-            int total = struct.lenght;
+            
 
             for(int i=0;i<total;i++){
-                if(! isInLevel(structCoord[i], struct[i])){
-                    
-                }
+                if(! isInLevel(struct[i])){
+
+                 }
                 else{
-                    for(int j = 0;i<struct[i].getLenght();j++){
-                        for(int k = 0;i<struct[i].getWidht();k++){
-                            this.tab[this.x + j][this.y + k] = '#';
+                    for(int j = 0;j<struct[i].getHeight();j++){
+                        for(int k = 0;k<struct[i].getWidht();k++){
+                            this.tab[struct[i].getY() + j][struct[i].getX() + k] = '#';
                         }
                     }
                 }
             }
 
-
+            //this.tab[4][4] = '#';
             this.p = p; //Player initialization
             this.x=x;
             this.y=y;
-            this.tab[x][y] = '1';
+            this.tab[y][x] = '1';
 
         }
     }
@@ -89,9 +89,9 @@ public class Map {
      * Function that display the map and the entity in it. It also print at the end the player in it with his score and coordonate
      */
     public void display(){ //FAIRE DANS TOSTRING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        for(int i=0;i<this.widht;i++){
+        for(int i=0;i<this.height;i++){
             System.out.println();
-            for(int j=0;j<this.lenght;j++){
+            for(int j=0;j<this.widht;j++){
                 System.out.print(tab[i][j]);
             }
         }
@@ -103,12 +103,12 @@ public class Map {
      * Method that return true if a structure can be placed on the coordonate indicated 
      * @return boolean that return true if the aera is available
      */
-    public boolean isInLevel(int[] structCoord ,Structure struct){
+    public boolean isInLevel(Structure struct){
 
-        if(structCoord[0]<=0 || structCoord[1]<=0){
+        if(struct.getX()<=0 || struct.getY()<=0){
             return false;
         }
-        else if(structCoord[0]+struct.getWidht()-1<this.widht || structCoord[1]+struct.getLenght()-1<this.lenght){
+        else if(((struct.getY()+struct.getHeight() - 1)>this.widht) || ((struct.getX()+struct.getWidht()-1)>this.height)){
             return false;
         }
         else{
@@ -126,11 +126,11 @@ public class Map {
 
 
       /**
-     * Method that return the lenght of the map
-     * @return integer that is the lenght of the map
+     * Method that return the height of the map
+     * @return integer that is the height of the map
      */
-    public int getLenght(){
-        return this.lenght;
+    public int getHeight(){
+        return this.height;
     }
 
     /**
@@ -149,11 +149,10 @@ public class Map {
      * @return return a boolean true if the case is available else false 
      */
     public boolean collisionDetector(int x, int y){
-        if(x==0 || x==this.lenght-1 || this.tab[y][x] != ' '){
+        if(this.tab[y][x] != ' ' || x==0 || x==this.widht-1 ){
             return false;
         }
-        else if(y==0 || y==this.widht-1 || this.tab[y][x] != ' '){
-            System.out.println("y impossible");
+        else if(this.tab[y][x] != ' ' || y==0 || y==this.height-1 ){ 
             return false;
         }
         return true;

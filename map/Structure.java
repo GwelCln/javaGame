@@ -11,28 +11,36 @@ public class Structure {
     
     private int shape;
     private int widht;
-    private int lenght;
+    private int height;
+    private int x;
+    private int y;
     private char[][] structure;
+    private static int numberStruct=0;
 
     /**
     * Constructor method of the Structure class. The structure can have different shape defined by type value.
     * @param shape decide the shape of the structure : 0 line, 1 square
     * @param widht widht of the structure
-    * @param lenght lenght of the structure
+    * @param height height of the structure
+    * @param x x coordonate of the structure
+    * @param y y coordonate of the structure
     */
-    public Structure Structure(int shape, int widht, int lenght){
+    public Structure(int shape, int widht, int height, int x, int y){
 
-        if(shape != 0 || shape != 1){ // More shape available soon !
+        if(! (shape == 0 || shape == 1)){ // More shape available soon !
             throw new ShapeNotFoundError("Error : the shape do not exist !");
         }
+        this.numberStruct +=1;
         this.shape = shape;
         this.widht = widht;
-        this.lenght = lenght;
+        this.height = height;
+        this.x = x;
+        this.y = y;
 
-        this.structure = new char[this.widht][this.lenght];
+        this.structure = new char[this.widht][this.height];
 
-        for(int i =0;i<widht;i++){
-            for(int j=0;j<lenght;j++){
+        for(int i =0;i<height;i++){
+            for(int j=0;j<widht;j++){
                 this.structure[i][j] = '#';
             }
         }
@@ -47,12 +55,35 @@ public class Structure {
     }
 
     /**
-     * Method that return the lenght of the struture
-     * @return integer that is the lenght of the structure
+     * Method that return the height of the struture
+     * @return integer that is the height of the structure
      */
-    public int getLenght(){
-        return this.lenght;
+    public int getHeight(){
+        return this.height;
     }
 
+    /**
+     * Method that return the total number of structure defined
+     * @return int value that is the number of struct
+     */
+    public int getNumberStruct(){
+        return numberStruct;
+    }
+
+    /**
+     * Method that return the x coordonate of the structure
+     * @return integer that is the x coordonate of the structure
+     */
+    public int getX(){
+        return this.x;
+    }
+
+    /**
+     * Method that return the y coordonate of the structure
+     * @return integer that is the y coordonate of the structure
+     */
+    public int getY(){
+        return this.y;
+    }
 
 }
