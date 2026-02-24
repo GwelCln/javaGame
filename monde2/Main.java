@@ -3,14 +3,11 @@ package monde2;
 
 import player.Player;
 import java.util.Scanner;  // Import the Scanner class, allow us to do input
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.Files;
 import java.nio.file.*;
 import map.*;
 import java.io.FileNotFoundException;
 import java.io.*;
-
+import java.lang.*;
 
 /**
  * Main class
@@ -37,34 +34,11 @@ public class Main {
 		public static void main(String[] args) {
 
 
-			//System.out.println(Player.getNumberOfPlayer());
-			System.out.println("Nombre de joueurs au début : " + Player.getNumberOfPlayer());
-			Player j1 = new Player();
-			Player j2 = new Player("Alice");
-			
-
-			j2.updateScore(2);
-
 			try{
 
-				Path chemin = Paths.get("save/test2.txt");
-				OutputStream output;
+				String chemin = "save/test2.txt";
 
-				output = Files.newOutputStream(chemin);
-
-				System.out.println(output.toString());
-
-				if(! Files.exists(chemin)){
-					throw new FileNotFoundException("Erreur : Fichier introuvable");
-				}
-
-				Structure test1 = new Structure(1, 3, 3, 5, 14);
-
-				Structure[] structTab = new Structure[test1.getNumberStruct()];
-
-				structTab[0] = test1;
-
-				Map level1 = new Map(15,15, j2 ,5,5, structTab);
+				Map level1 = Map.loadMap(chemin);
 
 				level1.display();
 
@@ -123,15 +97,12 @@ public class Main {
 			catch(NotAllowedSizeException e){
 				System.err.println(e.getMessage());
 			}
-			catch(FileNotFoundException e){
-				System.err.println(e.getMessage());
-			}
-			catch(IOException e){
-				System.err.println(e.getMessage());
-			}
-
-			
-			
+			// catch(FileNotFoundException e){
+			// 	System.err.println(e.getMessage());
+			// }
+			// catch(IOException e){
+			// 	System.err.println(e.getMessage());
+			// }		
 
 	}
 	

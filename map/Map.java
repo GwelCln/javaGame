@@ -2,6 +2,12 @@ package map;
 
 import player.Player;
 import map.Structure;
+import java.nio.file.*;
+import java.io.FileNotFoundException;
+import java.io.*;
+import java.lang.*;
+
+
 
 /**
  * Map class
@@ -47,9 +53,9 @@ public class Map {
             this.height = height;
             this.widht = widht;
             this.tab = new char[this.height][this.widht];
-            for(int i=0;i<widht;i++){
-                for(int j=0;j<height;j++){
-                    if(i==0 || j==height-1 || j==0 || i==widht-1){
+            for(int i=0;i<height;i++){
+                for(int j=0;j<widht;j++){
+                    if(i==0 || i==height-1 || j==0 || j==widht-1){
                         this.tab[i][j] = '#';
                     }
                     else{
@@ -59,10 +65,10 @@ public class Map {
             }
 
             
-            int total = struct[0].getNumberStruct();
+            int total = Structure.getNumberStruct();
 
             
-
+            
             for(int i=0;i<total;i++){
                 if(! isInLevel(struct[i])){
 
@@ -76,14 +82,74 @@ public class Map {
                 }
             }
 
-            //this.tab[4][4] = '#';
-            this.p = p; //Player initialization
-            this.x=x;
-            this.y=y;
-            this.tab[y][x] = '1';
+            
+            if(this.tab[y][x] == '#'){
+                throw new NotAllowedCoordonate("Erreur : le joueur ne peux pas être initialisé sur un mur.");
+            }
+            else{
+                this.p = p; //Player initialization
+                this.x=x;
+                this.y=y;
+                this.tab[y][x] = '1';
+            }
 
         }
     }
+
+    /**
+     * Method that load a map with structure and player position from a file passed in argument
+     * @param path string value of the relative path of the save file. The path start a the project's root directory
+     */
+    public static Map loadMap(String path){
+        try{
+
+            InputStream ips=new FileInputStream(path); 
+            InputStreamReader ipsr=new InputStreamReader(ips);
+            BufferedReader br=new BufferedReader(ipsr);
+
+            String ligne;
+            Player j = null;
+            ligne=br.readLine();
+            String[] st = ligne.split(":");
+            Structure[] structTab = new Structure[Integer.parseInt(st[1])];
+            int structIndex=0;
+            int[] mapValue = new int[4];
+            while ((ligne=br.readLine())!=null){
+
+                    if (ligne.contains("player:")){
+                        st = ligne.split(":");
+                        j = new Player(st[1]);
+                    }
+                    else if(ligne.contains("struct")){
+
+                        st = ligne.split(":");
+                        structTab[structIndex] = new Structure( Integer.parseInt(st[1]), Integer.parseInt(st[2]), Integer.parseInt(st[3]), Integer.parseInt(st[4]), Integer.parseInt(st[5]));
+                        structIndex++;
+                    }
+                    else if(ligne.contains("map")){
+                        st = ligne.split(":"); 
+                        for(int i=0;i<4;i++){
+                            mapValue[i] = Integer.parseInt(st[i+1]);
+                        }
+                    }
+				}
+				br.close(); 
+
+                return new Map(mapValue[0], mapValue[1], j, mapValue[2], mapValue[3], structTab);
+
+        }
+        catch(FileNotFoundException e){
+            System.err.println("Erreur : fichier introuvable " + path + "\n" + e.getMessage());
+        }
+        catch(IOException e){
+            System.err.println(e.getMessage());
+        }
+        
+        return null;
+
+    }
+    
+
 
     /**
      * Function that display the map and the entity in it. It also print at the end the player in it with his score and coordonate
@@ -143,7 +209,7 @@ public class Map {
 
     /**
      * Function that return False if a coordonate is not appropriate 
-     * /!\ important to enter first the x coodonate and then de y coordonate
+     * /!\ important to enter first the x coordonate and then the y coordonate
      * @param x x coordonate of the player you want to test
      * @param y y coordonate of the player you want to test
      * @return return a boolean true if the case is available else false 

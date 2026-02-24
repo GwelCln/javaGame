@@ -66,7 +66,7 @@ public class Structure {
      * Method that return the total number of structure defined
      * @return int value that is the number of struct
      */
-    public int getNumberStruct(){
+    public static int getNumberStruct(){
         return numberStruct;
     }
 
