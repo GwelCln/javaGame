@@ -3,9 +3,9 @@ package map;
 import player.Player;
 import map.Structure;
 import java.nio.file.*;
-import java.io.FileNotFoundException;
 import java.io.*;
 import java.lang.*;
+import java.io.FileNotFoundException;
 
 
 
@@ -100,50 +100,49 @@ public class Map {
      * Method that load a map with structure and player position from a file passed in argument
      * @param path string value of the relative path of the save file. The path start a the project's root directory
      */
-    public static Map loadMap(String path){
+    public static Map loadMap(String path) throws FileNotFoundException{
+        Path chemin = Paths.get(path);
+        if (! Files.exists(chemin)){               
+            throw new FileNotFoundException("Erreur : fichier " + path + " introuvable...");
+        }
         try{
+                InputStream ips=new FileInputStream(path); 
+                InputStreamReader ipsr=new InputStreamReader(ips);
+                BufferedReader br=new BufferedReader(ipsr);
 
-            InputStream ips=new FileInputStream(path); 
-            InputStreamReader ipsr=new InputStreamReader(ips);
-            BufferedReader br=new BufferedReader(ipsr);
+                String ligne;
+                Player j = null;
+                ligne=br.readLine();
+                String[] st = ligne.split(":");
+                Structure[] structTab = new Structure[Integer.parseInt(st[1])];
+                int structIndex=0;
+                int[] mapValue = new int[4];
+                while ((ligne=br.readLine())!=null){
 
-            String ligne;
-            Player j = null;
-            ligne=br.readLine();
-            String[] st = ligne.split(":");
-            Structure[] structTab = new Structure[Integer.parseInt(st[1])];
-            int structIndex=0;
-            int[] mapValue = new int[4];
-            while ((ligne=br.readLine())!=null){
+                        if (ligne.contains("player:")){
+                            st = ligne.split(":");
+                            j = new Player(st[1]);
+                        }
+                        else if(ligne.contains("struct")){
 
-                    if (ligne.contains("player:")){
-                        st = ligne.split(":");
-                        j = new Player(st[1]);
-                    }
-                    else if(ligne.contains("struct")){
-
-                        st = ligne.split(":");
-                        structTab[structIndex] = new Structure( Integer.parseInt(st[1]), Integer.parseInt(st[2]), Integer.parseInt(st[3]), Integer.parseInt(st[4]), Integer.parseInt(st[5]));
-                        structIndex++;
-                    }
-                    else if(ligne.contains("map")){
-                        st = ligne.split(":"); 
-                        for(int i=0;i<4;i++){
-                            mapValue[i] = Integer.parseInt(st[i+1]);
+                            st = ligne.split(":");
+                            structTab[structIndex] = new Structure( Integer.parseInt(st[1]), Integer.parseInt(st[2]), Integer.parseInt(st[3]), Integer.parseInt(st[4]), Integer.parseInt(st[5]));
+                            structIndex++;
+                        }
+                        else if(ligne.contains("map")){
+                            st = ligne.split(":"); 
+                            for(int i=0;i<4;i++){
+                                mapValue[i] = Integer.parseInt(st[i+1]);
+                            }
                         }
                     }
-				}
-				br.close(); 
+                    br.close(); 
 
-                return new Map(mapValue[0], mapValue[1], j, mapValue[2], mapValue[3], structTab);
-
-        }
-        catch(FileNotFoundException e){
-            System.err.println("Erreur : fichier introuvable " + path + "\n" + e.getMessage());
-        }
-        catch(IOException e){
-            System.err.println(e.getMessage());
-        }
+                    return new Map(mapValue[0], mapValue[1], j, mapValue[2], mapValue[3], structTab);
+            }     
+            catch(IOException e){
+                System.err.println(e.getMessage());
+            }
         
         return null;
 
@@ -174,7 +173,7 @@ public class Map {
         if(struct.getX()<=0 || struct.getY()<=0){
             return false;
         }
-        else if(((struct.getY()+struct.getHeight() - 1)>this.widht) || ((struct.getX()+struct.getWidht()-1)>this.height)){
+        else if(((struct.getY()+struct.getHeight() - 1)>this.height) || ((struct.getX()+struct.getWidht()-1)>this.widht)){
             return false;
         }
         else{

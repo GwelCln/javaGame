@@ -36,10 +36,8 @@ public class Main {
 
 			try{
 
-				String chemin = "save/test2.txt";
-
-				Map level1 = Map.loadMap(chemin);
-
+				Map level1 = Map.loadMap(args[0]);
+				
 				level1.display();
 
 				level1.toString();
@@ -97,9 +95,9 @@ public class Main {
 			catch(NotAllowedSizeException e){
 				System.err.println(e.getMessage());
 			}
-			// catch(FileNotFoundException e){
-			// 	System.err.println(e.getMessage());
-			// }
+			catch(FileNotFoundException e){
+            	System.err.println(e.getMessage());
+        	}
 			// catch(IOException e){
 			// 	System.err.println(e.getMessage());
 			// }		

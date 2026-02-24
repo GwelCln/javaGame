@@ -1,0 +1,5 @@
+1:2:0:0:0:0
+map:20:20:1:1
+player:TimoChenko
+struct:0:3:3:3:3
+struct:0:3:3:7:3

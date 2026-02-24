@@ -1,7 +1,9 @@
 package map;
 
 
-
+/**
+ * Structure class. Refer to wall in the game
+ */
 public class Structure {
     
     /**
@@ -25,7 +27,7 @@ public class Structure {
     * @param x x coordonate of the structure
     * @param y y coordonate of the structure
     */
-    public Structure(int shape, int widht, int height, int x, int y){
+    public Structure(int shape, int height, int widht, int x, int y){
 
         if(! (shape == 0 || shape == 1)){ // More shape available soon !
             throw new ShapeNotFoundError("Error : the shape do not exist !");
@@ -37,13 +39,13 @@ public class Structure {
         this.x = x;
         this.y = y;
 
-        this.structure = new char[this.widht][this.height];
+        // this.structure = new char[this.widht][this.height];
 
-        for(int i =0;i<height;i++){
-            for(int j=0;j<widht;j++){
-                this.structure[i][j] = '#';
-            }
-        }
+        // for(int i =0;i<height;i++){
+        //     for(int j=0;j<widht;j++){
+        //         this.structure[i][j] = '#';
+        //     }
+        // }
     }
 
     /**
