@@ -12,7 +12,7 @@ public class Structure {
     */
     
     private int shape;
-    private int widht;
+    private int width;
     private int height;
     private int x;
     private int y;
@@ -22,38 +22,38 @@ public class Structure {
     /**
     * Constructor method of the Structure class. The structure can have different shape defined by type value.
     * @param shape decide the shape of the structure : 0 line, 1 square
-    * @param widht widht of the structure
+    * @param width width of the structure
     * @param height height of the structure
     * @param x x coordonate of the structure
     * @param y y coordonate of the structure
     */
-    public Structure(int shape, int height, int widht, int x, int y){
+    public Structure(int shape, int height, int width, int x, int y){
 
         if(! (shape == 0 || shape == 1)){ // More shape available soon !
             throw new ShapeNotFoundError("Error : the shape do not exist !");
         }
         this.numberStruct +=1;
         this.shape = shape;
-        this.widht = widht;
+        this.width = width;
         this.height = height;
         this.x = x;
         this.y = y;
 
-        // this.structure = new char[this.widht][this.height];
+        // this.structure = new char[this.width][this.height];
 
         // for(int i =0;i<height;i++){
-        //     for(int j=0;j<widht;j++){
+        //     for(int j=0;j<width;j++){
         //         this.structure[i][j] = '#';
         //     }
         // }
     }
 
     /**
-     * Method that return the widht of the struture
-     * @return integer that is the widht of the structure
+     * Method that return the width of the struture
+     * @return integer that is the width of the structure
      */
-    public int getWidht(){
-        return this.widht;
+    public int getWidth(){
+        return this.width;
     }
 
     /**
