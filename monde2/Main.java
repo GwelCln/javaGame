@@ -40,58 +40,112 @@ public class Main {
 				throw new FileNotFoundException("Erreur : absence de fichier de sauvegarde introuvable.\nVous devez donner un nom de sauvegarde par exemple map1.");
 			}
 
-			Map level1 = Map.loadMap(args[0]);
-			
-			if(level1 == null){
-				System.exit(0); // Error exit due to unknow save file
-			}
-
-			level1.display();
-
-			level1.toString();
-
-			Boolean game = true;
-
 			Scanner input = new Scanner(System.in);
-			Move move;
 
+			boolean replay = true;
 
-			System.out.println("z up | s down | q left | d right | e quit : ");
-			while(game){
+			System.out.print("What's your name : ");
+            String playerName = input.nextLine();
 
-				String mv = input.nextLine();
+            Player j = new Player(playerName);
 
-				switch(mv){
-					case "e":
-						game = false;
-						break;
-					case "z":
-						move = Move.HAUT;
-						level1.movePlayer(move);
-						break;
-					case "s":
-						move = Move.BAS;
-						level1.movePlayer(move);
-						break;
-					case "d":
-						move = Move.DROITE;
-						level1.movePlayer(move);
-						break;
-					case "q":
-						move = Move.GAUCHE;
-						level1.movePlayer(move);
-						
-						break;
-					default:
-						System.out.println("z up | s down | q left | d right | e quit : ");
-						break;
+			int lvl=0;
+
+			while(replay){
+
+				Map level1 = Map.loadMap(args[lvl], j);
+				
+				if(level1 == null){
+					System.exit(0); // Error exit due to unknow save file
 				}
+
+
 				level1.display();
-				System.out.println(level1.toString());
-				if(level1.getCoinNumber() == 0){
-					level1.levelComplete();
-					break;
+
+				level1.toString();
+
+				Boolean game = true;
+
+				
+				Move move;
+
+
+				System.out.println("z up | s down | q left | d right | e quit : ");
+				while(game){
+
+					String mv = input.nextLine();
+
+					switch(mv){
+						case "e":
+							game = false;
+							replay = false;
+							System.exit(0);
+							break;
+						case "z":
+							move = Move.HAUT;
+							level1.movePlayer(move);
+							break;
+						case "s":
+							move = Move.BAS;
+							level1.movePlayer(move);
+							break;
+						case "d":
+							move = Move.DROITE;
+							level1.movePlayer(move);
+							break;
+						case "q":
+							move = Move.GAUCHE;
+							level1.movePlayer(move);
+							
+							break;
+						default:
+							System.out.println("z up | s down | q left | d right | e quit : ");
+							break;
+					}
+					level1.display();
+					System.out.println(level1.toString());
+					if(level1.getCoinNumber() == 0){
+						game = false;
+						level1.levelComplete();
+						lvl++;
+
+						if(lvl == args.length){
+							System.out.println("Congratulation " + level1.getName() + ", you finished the game !! \nThank you very much...\nCollin Gweltaz");
+							input.nextLine();
+							System.exit(0);
+						}
+
+						System.out.print("Press enter to continue...");
+						input.nextLine();
+
+					}
+					else if(level1.getHP() == 0){
+						game = false;
+						level1.gameOver();
+
+						System.out.print("Press r to retry or q to quit : ");
+						String cr = input.nextLine();
+						switch(cr){
+
+							case "r":
+								System.out.println("Starting new game.");
+								j.resetHP();
+								j.resetScore();
+								
+								lvl=0;
+								break;
+
+							case "q":
+								replay = false;
+								break;
+
+							default:		
+								replay = false;
+								break;
+						}
+					}
 				}
+				System.out.println();
 				
 			}
 		}
@@ -108,5 +162,5 @@ public class Main {
 			System.err.println(e.getMessage());
 		}
 	}
-	
+
 }

@@ -1,0 +1,105 @@
+package map;
+import map.Type;
+
+
+
+/**
+ * Cellule Class
+ */
+public class Cellule{
+
+    private int x;
+    private int y;
+    private Type type;
+    private boolean coin;
+
+    /**
+     * Contructor method of the cellule class
+     * @param x column of the cell
+     * @param y ligne of the cell
+     * @param type type of the cell can be a trap, empty, wall, or door
+     * @param coin boolean value if the cell contain a coin
+     */
+    public Cellule(int x, int y, Type type, boolean coin){
+
+        this.x = x;
+        this.y = y;
+        this.type = type;
+        this.coin = coin;
+
+    }
+
+    /**
+     * Method that return the ligne of the cell
+     * @return integer value
+     */
+    public int celluleGetX(){
+        return this.x;
+    }
+
+    /**
+     * Method that return the column of the cell 
+     * @return integer value
+     */
+    public int celluleGetY(){
+        return this.y;
+    }
+
+    /**
+     * Method that return the type of the cell 
+     * @return Type value
+     */
+    public Type getType(){
+        return this.type;
+    }
+
+    /**
+     * Method that return if the cell contain a coin or not
+     * @return boolean value 
+     */
+    public boolean getCoin(){
+        return this.coin;
+    }
+
+    /**
+     * Method that change the type of the cell
+     */
+    public void updateType(Type type){
+        this.type = type;
+    }
+
+    /**
+     * Function that update the cell if a player pick up the coin
+     * if so the coin value is now false
+     * @return boolean value true if the operation has successfully happened
+     */
+    public boolean pickCoin(){
+        if(this.coin == true){
+            this.coin = false;
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    /**
+     * Function that activate the coin value
+     */
+    public void activateCoin(){
+        if(this.coin == true){
+            this.coin = false;
+        }
+        else{
+            this.coin = true;
+        }
+    }
+
+
+}
+
+
+
+
+
+

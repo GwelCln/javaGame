@@ -88,4 +88,11 @@ public class Structure {
         return this.y;
     }
 
+    /**
+     * Method that reset the number of struct if we load the game
+     */
+    public static void resetCount(){
+        numberStruct = 0; // remet le compteur à 0
+    }
+
 }

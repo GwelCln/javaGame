@@ -14,6 +14,7 @@ public class Player {
 		private final String name; // Not updatable
 		private int score; // Only the class player can acces this variable 
 		private static int numberOfPlayer=0; //Shared Variable
+		private int hp=5;
 	
 
 		/**
@@ -54,17 +55,17 @@ public class Player {
 		public void updateScore(int value){
 			this.score = this.score+value<0 ? 0 : this.score+value;
 		}
-		
+
 		//@override
 		/**
 		 * Redefinition of the player toString methode, now print name : score pt(s)
 		 */
 		public String toString(){
 			if(this.score <= 1){
-				return this.name + " : " + this.score + " pt";
+				return this.hp + " HP" + "\n" + this.name + " : " + this.score + " pt";
 			}
 			else{
-				return this.name + " : " + this.score + " pts";
+				return  this.hp + " HP" + "\n" + this.name + " : " + this.score + " pts";
 			}
 		}
 
@@ -106,6 +107,36 @@ public class Player {
 		 */
 		public int getScore(){
 			return this.score;
+		}
+		
+		/**
+		 * update the player health point 
+		 * @param value positive or negative value which is added to the hp
+		 */
+		public void updateHP(int value){
+			this.hp = this.hp+value<0 ? 0 : this.hp+value;
+		}
+
+		/**
+		 * Method that return the current number of hp of the player
+		 */
+		public int getHP(){
+			return this.hp;
+		}
+
+		/**
+		 * Method that reset the number of HP of the player
+		 * reset value = 5hp
+		 */
+		public void resetHP(){
+			hp=5;
+		}
+
+		/**
+		 * Method that reset the player score to 0
+		 */
+		public void resetScore(){
+			this.score=0;
 		}
 
 

@@ -1,5 +1,7 @@
 package map;
 
+import map.Cellule;
+import map.Type;
 import player.Player;
 import map.Structure;
 import java.nio.file.*;
@@ -19,11 +21,14 @@ public class Map {
 		*/
     private int height;  // hauteur height
     private int width; // Largeur
-    private char[][] tab; // tableau contenant les caractères
+    private Cellule[][] tab; // tableau contenant les caractères
     private final Player p;
     private int x; // Player x coordonate
     private int y; // Player y coordonate
     private static int coinNumber=0; // Total number of coin in the map
+    private int originX; // value that keep in memory the origin x coordonate of the player
+    private int originY; // value that keep in memory the origin y coordonate of the player
+    private static int trapNumber=0; // total number of trap on the map
 
     /**
      * Constructor of Map, it create a map with a width and a height defined in the parameter. 
@@ -53,31 +58,36 @@ public class Map {
         else{
             this.height = height;
             this.width = width;
-            this.tab = new char[this.height][this.width];
+            this.tab = new Cellule[this.height][this.width];
             for(int i=0;i<height;i++){
                 for(int j=0;j<width;j++){
                     if(i==0 || i==height-1 || j==0 || j==width-1){
-                        this.tab[i][j] = '#';
+                        this.tab[i][j] = new Cellule(j, i, Type.MUR, false);
                     }
                     else{
-                        this.tab[i][j] = ' ';
+                        this.tab[i][j] = new Cellule(j, i, Type.VIDE, false);
                     }
                 }
             }
         }
-
+        
         this.p = p; //Player initialization
         this.x=x;
         this.y=y;
+        this.originX = x;
+        this.originY = y;
 
 
         int total = Structure.getNumberStruct();
 
         int freeSpace = (this.getHeight()-2)*(this.getWidth()-2);
         
-        int numberOfCoin = 1+ (int) ( Math.random() * 9);
+        int numberOfCoin = 1+ (int) ( Math.random() * 10);
         System.out.println("Number of coin : " + numberOfCoin);
 
+
+        int numberOfTrap = 2+ (int) ( Math.random() * 5);
+        System.out.println("Number of trap : " + numberOfTrap);
 
         for(int i=0;i<total;i++){
             if(! isInLevel(struct[i])){
@@ -87,31 +97,47 @@ public class Map {
                 freeSpace -= struct[i].getHeight()+struct[i].getWidth();
                 for(int j = 0;j<struct[i].getHeight();j++){
                     for(int k = 0;k<struct[i].getWidth();k++){
-                        this.tab[struct[i].getY() + j][struct[i].getX() + k] = '#';
+                        this.tab[struct[i].getY() + j][struct[i].getX() + k].updateType(Type.MUR);
                     }
                 }
             }
         }
 
-        if(freeSpace < 1+numberOfCoin){
-            throw new NotAllowedSizeException("Error : no space for the coin.");
+        if(freeSpace < 1+numberOfCoin+numberOfTrap){
+            throw new NotAllowedSizeException("Error : not enough space for the coin.");
         }
-        if(this.tab[y][x] == '#'){
+        if(this.tab[y][x].getType() == Type.MUR){
             throw new NotAllowedCoordonate("Erreur : le joueur ne peux pas être initialisé sur un mur.");
         }
+
+        while(this.getTrapNumber() != numberOfTrap){
+            int xTrap = 1 + (int) ( Math.random() * this.getWidth()-1);
+            int yTrap = 1 + (int) ( Math.random() * this.getHeight()-1);
+
+
+            if(this.tab[yTrap][xTrap].getType() == Type.VIDE){
+
+                this.tab[yTrap][xTrap].updateType(Type.PIEGE);
+                this.trapNumber++;
+
+            }
+        }
+
 
         while(this.getCoinNumber() != numberOfCoin){
             int xCoin = 1 + (int) ( Math.random() * this.getWidth()-1);
             int yCoin = 1 + (int) ( Math.random() * this.getHeight()-1);
 
 
-            if(this.tab[yCoin][xCoin] == ' '){
+            if(this.tab[yCoin][xCoin].getType() == Type.VIDE && this.tab[yCoin][xCoin].getCoin() == false){
 
-                this.tab[yCoin][xCoin] = '.';
+                this.tab[yCoin][xCoin].activateCoin();
+                System.out.println("x : "+ xCoin + " | y : "+ yCoin);
                 this.coinNumber++;
 
             }
         }
+
     }
     
 
@@ -119,36 +145,32 @@ public class Map {
      * Method that load a map with structure and player position from a file passed in argument
      * @param path string value of the relative path of the save file. The path start a the project's root directory
      */
-    public static Map loadMap(String path) throws FileNotFoundException{
+    public static Map loadMap(String path, Player p) throws FileNotFoundException{
         Path chemin = Paths.get(path);
-        try{
-            if (! Files.exists(chemin)){               
-                throw new FileNotFoundException("Erreur : fichier " + path + " introuvable...");
-            }
+
+        if (! Files.exists(chemin)){               
+            throw new FileNotFoundException("Erreur : fichier " + path + " introuvable...");
         }
-        catch(FileNotFoundException e){
-                System.err.println(e.getMessage());
-        }
+   
+        
         try{
+            Structure.resetCount();
+            coinNumber =0;
+            trapNumber =0;
             InputStream ips=new FileInputStream(path); 
             InputStreamReader ipsr=new InputStreamReader(ips);
             BufferedReader br=new BufferedReader(ipsr);
 
             String ligne;
-            Player j = null;
             ligne=br.readLine();
             String[] st = ligne.split(":");
             Structure[] structTab = new Structure[Integer.parseInt(st[1])];
             int structIndex=0;
             int[] mapValue = new int[4];
+            
             while ((ligne=br.readLine())!=null){
 
-                if (ligne.contains("player:")){
-                    st = ligne.split(":");
-                    j = new Player(st[1]);
-                }
-                else if(ligne.contains("struct")){
-
+                if(ligne.contains("struct")){
                     st = ligne.split(":");
                     structTab[structIndex] = new Structure( Integer.parseInt(st[1]), Integer.parseInt(st[2]), Integer.parseInt(st[3]), Integer.parseInt(st[4]), Integer.parseInt(st[5]));
                     structIndex++;
@@ -162,7 +184,7 @@ public class Map {
             }
             br.close(); 
 
-            return new Map(mapValue[0], mapValue[1], j, mapValue[2], mapValue[3], structTab);
+            return new Map(mapValue[0], mapValue[1], p, mapValue[2], mapValue[3], structTab);
         }     
         catch(IOException e){
             System.err.println(e.getMessage());
@@ -185,7 +207,18 @@ public class Map {
                     System.out.print('1');
                 }
                 else{
-                    System.out.print(tab[i][j]);
+                    if(tab[i][j].getType() == Type.MUR){
+                        System.out.print('#');
+                    }
+                    else if(tab[i][j].getType() == Type.PIEGE){
+                        System.out.print('*');
+                    }           
+                    else if(tab[i][j].getCoin() == true){
+                        System.out.print('.');
+                    }
+                    else{
+                        System.out.print(' ');
+                    }
                 }
             }
         }
@@ -243,6 +276,17 @@ public class Map {
         return this.coinNumber;
     }
 
+
+    /**
+     * Method that return the health point of the player
+     * @return integer that is the number of Hp of the player
+     */
+    public  int getHP(){
+        return this.p.getHP();
+    }
+
+
+
     /**
      * Function that return False if a coordonate is not appropriate 
      * /!\ important to enter first the x coordonate and then the y coordonate
@@ -251,10 +295,10 @@ public class Map {
      * @return return a boolean true if the case is available else false 
      */
     public boolean collisionDetector(int x, int y){
-        if(this.tab[y][x] == '#' || x==0 || x==this.width-1 ){
+        if(this.tab[y][x].getType() == Type.MUR || x==0 || x==this.width-1 ){
             return false;
         }
-        else if(this.tab[y][x] == '#' || y==0 || y==this.height-1 ){ 
+        else if(this.tab[y][x].getType() == Type.MUR || y==0 || y==this.height-1 ){ 
             return false;
         }
         return true;
@@ -267,12 +311,8 @@ public class Map {
         switch(m){
             case DROITE:
                 if(collisionDetector(this.x+1, this.y)){
-                    if(this.tab[this.y][this.x+1] == '.'){
-                        this.tab[this.y][this.x+1] = ' ';
-                        this.p.updateScore(10);
-                        this.coinNumber --;
-                    }
                     this.x += 1;
+                    this.eventManager();
                 }
                 else{
                     System.out.println("Impossible d'aller par ici !");
@@ -280,12 +320,8 @@ public class Map {
                 break;
             case GAUCHE:
                 if(collisionDetector(this.x-1, this.y)){
-                    if(this.tab[this.y][this.x-1] == '.'){
-                        this.tab[this.y][this.x-1] = ' ';
-                        this.p.updateScore(10);
-                        this.coinNumber--;
-                    }
                     this.x -= 1;
+                    this.eventManager();
                 }
                 else{
                     System.out.println("Impossible d'aller par ici !");
@@ -293,12 +329,8 @@ public class Map {
                 break;
             case BAS:
                 if(collisionDetector(this.x, this.y+1)){
-                    if(this.tab[this.y+1][this.x] == '.'){
-                        this.tab[this.y+1][this.x] = ' ';
-                        this.p.updateScore(10);
-                        this.coinNumber --;
-                    }
                     this.y += 1;
+                    this.eventManager();
                 }
                 else{
                     System.out.println("Impossible d'aller par ici !");
@@ -306,12 +338,8 @@ public class Map {
                 break;
             case HAUT:
                 if(collisionDetector(this.x, this.y-1)){
-                    if(this.tab[this.y-1][this.x] == '.'){
-                        this.tab[this.y-1][this.x] = ' ';
-                        this.p.updateScore(10);
-                        this.coinNumber --;
-                    }
                     this.y -= 1;
+                    this.eventManager();
                 }
                 else{
                     System.out.println("Impossible d'aller par ici !");
@@ -364,4 +392,104 @@ public class Map {
 
     }
 
+    /**
+     * Method that display the Game Over screen.
+     */
+    public void gameOver(){
+        // int i =0;
+        // for(;i<this.height/2;i++){
+        //     System.out.println();
+        //     for(int j =0;j<this.width;j++){  
+        //         if(i==0 || j==0 || j==width-1){
+        //             System.out.print('#');
+        //         }
+        //         else{
+        //             System.out.print(' ');
+        //         }
+        //     }
+        // }
+        // System.out.println(' ');
+        // System.out.print('#');
+        // int k=1;
+        // for(;k<this.width/2-5;k++){
+        //     System.out.print(' ');
+        // }
+        // k=this.width/2+5;
+        // System.out.print("Game Over.");
+        // for(;k<this.width-1;k++){
+        //     System.out.print(' ');
+        // }
+        // System.out.print('#');
+        // i++;
+        // for(;i<this.height;i++){
+        //     System.out.println();
+        //     for(int j=0;j<this.width;j++){
+        //         if( i==height-1 || j==0 || j==width-1){
+        //             System.out.print('#');
+        //         }
+        //         else{
+        //             System.out.print(' ');
+        //         }
+        //     }
+        // }
+        // System.out.println();
+
+        System.out.println();
+        System.out.println("  ██████╗  █████╗ ███╗   ███╗███████╗     ██████╗ ██╗   ██╗███████╗██████╗ ");
+        System.out.println("  ██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ██╔═══██╗██║   ██║██╔════╝██╔══██╗");
+        System.out.println("  ██║  ███╗███████║██╔████╔██║█████╗      ██║   ██║██║   ██║█████╗  ██████╔╝");
+        System.out.println("  ██║   ██║██╔══██║██║╚██╔╝██║██╔══╝      ██║   ██║╚██╗ ██╔╝██╔══╝  ██╔══██╗");
+        System.out.println("  ╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ╚██████╔╝ ╚████╔╝ ███████╗██║  ██║");
+        System.out.println("   ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝     ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝");
+        System.out.println();
+        System.out.println();
+
+
+    }
+
+
+    /**
+     * Function that manage event when a player enter a new place of the map
+     */
+    public void eventManager(){
+
+        if(this.tab[this.y][this.x].getCoin() == true){
+            this.tab[this.y][this.x].activateCoin();
+            this.p.updateScore(10);
+            this.coinNumber --;
+        }
+        else if(this.tab[this.y][this.x].getType() == Type.PIEGE){
+            this.tab[this.y][this.x].updateType(Type.VIDE);
+            this.p.updateHP(-2);
+            this.x = this.originX;
+            this.y = this.originY;
+        }
+
+    }
+
+     /**
+     * Method that return the number of trap in the map
+     * @return integer that is the total number of trap in the map
+     */
+    public int getTrapNumber(){
+        return this.trapNumber;
+    }
+
+    /**
+     * Method that reset the number of trap
+     */
+    public void resetTrap(){
+        this.trapNumber =0;
+    }
+
+    /**
+     * Method that reset the number of trap
+     */
+    public void resetCoin(){
+        this.coinNumber =0;
+    }
+
+    public String getName(){
+        return this.p.getName();
+    }
 }
