@@ -36,8 +36,16 @@ public class Main {
 
 		try{
 
+			if (args.length == 0) {
+				throw new FileNotFoundException("Erreur : absence de fichier de sauvegarde introuvable.\nVous devez donner un nom de sauvegarde par exemple map1.");
+			}
+
 			Map level1 = Map.loadMap(args[0]);
 			
+			if(level1 == null){
+				System.exit(0); // Error exit due to unknow save file
+			}
+
 			level1.display();
 
 			level1.toString();
@@ -56,6 +64,7 @@ public class Main {
 				switch(mv){
 					case "e":
 						game = false;
+						break;
 					case "z":
 						move = Move.HAUT;
 						level1.movePlayer(move);
