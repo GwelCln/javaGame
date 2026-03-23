@@ -12,6 +12,7 @@ public class Cellule{
     private int y;
     private Type type;
     private boolean coin;
+    private boolean collision;
 
     /**
      * Contructor method of the cellule class
@@ -20,12 +21,13 @@ public class Cellule{
      * @param type type of the cell can be a trap, empty, wall, or door
      * @param coin boolean value if the cell contain a coin
      */
-    public Cellule(int x, int y, Type type, boolean coin){
+    public Cellule(int x, int y, Type type, boolean coin, boolean collision){
 
         this.x = x;
         this.y = y;
         this.type = type;
         this.coin = coin;
+        this.collision = collision;
 
     }
 
@@ -95,7 +97,13 @@ public class Cellule{
         }
     }
 
-
+    /**
+     * Method that return the collision value of the instance
+     * @return boolean value that is true if the player can't pass it or false if he can
+     */
+    public boolean getCollision(){
+        return this.collision;
+    }
 }
 
 

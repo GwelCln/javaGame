@@ -62,10 +62,15 @@ public class Map {
             for(int i=0;i<height;i++){
                 for(int j=0;j<width;j++){
                     if(i==0 || i==height-1 || j==0 || j==width-1){
-                        this.tab[i][j] = new Cellule(j, i, Type.MUR, false);
+                        if((i == 0 && j == width/2) || (i == height-1 && j == width/2) || (i == height/2 && j == 0) || (i == height/2 && j == width-1) ){
+                            this.tab[i][j] = new Cellule(j, i, Type.PORTE_V, false, true);
+                        }
+                        else{
+                            this.tab[i][j] = new Cellule(j, i, Type.MUR, false, true);
+                        }
                     }
                     else{
-                        this.tab[i][j] = new Cellule(j, i, Type.VIDE, false);
+                        this.tab[i][j] = new Cellule(j, i, Type.VIDE, false, false);
                     }
                 }
             }
@@ -132,7 +137,6 @@ public class Map {
             if(this.tab[yCoin][xCoin].getType() == Type.VIDE && this.tab[yCoin][xCoin].getCoin() == false){
 
                 this.tab[yCoin][xCoin].activateCoin();
-                System.out.println("x : "+ xCoin + " | y : "+ yCoin);
                 this.coinNumber++;
 
             }
@@ -212,7 +216,10 @@ public class Map {
                     }
                     else if(tab[i][j].getType() == Type.PIEGE){
                         System.out.print('*');
-                    }           
+                    }   
+                    else if(tab[i][j].getType() == Type.PORTE_V){
+                        System.out.print('D');
+                    }         
                     else if(tab[i][j].getCoin() == true){
                         System.out.print('.');
                     }
@@ -295,10 +302,10 @@ public class Map {
      * @return return a boolean true if the case is available else false 
      */
     public boolean collisionDetector(int x, int y){
-        if(this.tab[y][x].getType() == Type.MUR || x==0 || x==this.width-1 ){
+        if(this.tab[y][x].getCollision() == true || x==0 || x==this.width-1 ){
             return false;
         }
-        else if(this.tab[y][x].getType() == Type.MUR || y==0 || y==this.height-1 ){ 
+        else if(this.tab[y][x].getCollision() == true || y==0 || y==this.height-1 ){ 
             return false;
         }
         return true;
@@ -352,42 +359,52 @@ public class Map {
      * Method that display the level Complete screen.
      */
     public void levelComplete(){
-        int i =0;
-        for(;i<this.height/2;i++){
-            System.out.println();
-            for(int j =0;j<this.width;j++){  
-                if(i==0 || j==0 || j==width-1){
-                    System.out.print('#');
-                }
-                else{
-                    System.out.print(' ');
-                }
-            }
-        }
-        System.out.println(' ');
-        System.out.print('#');
-        int k=1;
-        for(;k<this.width/2-8;k++){
-            System.out.print(' ');
-        }
-        k=this.width/2+8;
-        System.out.print("Level complete !");
-        for(;k<this.width-1;k++){
-            System.out.print(' ');
-        }
-        System.out.print('#');
-        i++;
-        for(;i<this.height;i++){
-            System.out.println();
-            for(int j=0;j<this.width;j++){
-                if( i==height-1 || j==0 || j==width-1){
-                    System.out.print('#');
-                }
-                else{
-                    System.out.print(' ');
-                }
-            }
-        }
+        // int i =0;
+        // for(;i<this.height/2;i++){
+        //     System.out.println();
+        //     for(int j =0;j<this.width;j++){  
+        //         if(i==0 || j==0 || j==width-1){
+        //             System.out.print('#');
+        //         }
+        //         else{
+        //             System.out.print(' ');
+        //         }
+        //     }
+        // }
+        // System.out.println(' ');
+        // System.out.print('#');
+        // int k=1;
+        // for(;k<this.width/2-8;k++){
+        //     System.out.print(' ');
+        // }
+        // k=this.width/2+8;
+        // System.out.print("Level complete !");
+        // for(;k<this.width-1;k++){
+        //     System.out.print(' ');
+        // }
+        // System.out.print('#');
+        // i++;
+        // for(;i<this.height;i++){
+        //     System.out.println();
+        //     for(int j=0;j<this.width;j++){
+        //         if( i==height-1 || j==0 || j==width-1){
+        //             System.out.print('#');
+        //         }
+        //         else{
+        //             System.out.print(' ');
+        //         }
+        //     }
+        // }
+        // System.out.println();
+
+        System.out.println();
+        System.out.println("  ██╗   ██╗ ██████╗ ██╗   ██╗    ██╗    ██╗██╗███╗   ██╗");
+        System.out.println("  ╚██╗ ██╔╝██╔═══██╗██║   ██║    ██║    ██║██║████╗  ██║");
+        System.out.println("   ╚████╔╝ ██║   ██║██║   ██║    ██║ █╗ ██║██║██╔██╗ ██║");
+        System.out.println("    ╚██╔╝  ██║   ██║██║   ██║    ██║███╗██║██║██║╚██╗██║");
+        System.out.println("     ██║   ╚██████╔╝╚██████╔╝    ╚███╔███╔╝██║██║ ╚████║");
+        System.out.println("     ╚═╝    ╚═════╝  ╚═════╝      ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝");
+        System.out.println();
         System.out.println();
 
     }
@@ -492,4 +509,5 @@ public class Map {
     public String getName(){
         return this.p.getName();
     }
+
 }
