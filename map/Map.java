@@ -103,6 +103,7 @@ public class Map {
                 for(int j = 0;j<struct[i].getHeight();j++){
                     for(int k = 0;k<struct[i].getWidth();k++){
                         this.tab[struct[i].getY() + j][struct[i].getX() + k].updateType(Type.MUR);
+                        this.tab[struct[i].getY() + j][struct[i].getX() + k].activateCollision();
                     }
                 }
             }
@@ -302,13 +303,31 @@ public class Map {
      * @return return a boolean true if the case is available else false 
      */
     public boolean collisionDetector(int x, int y){
-        if(this.tab[y][x].getCollision() == true || x==0 || x==this.width-1 ){
-            return false;
+        if(this.tab[y][x].getCollision() == true){
+
+            if(this.tab[y][x].getType() == Type.PORTE_V){
+                return false;
+            }
+
+            if(x==0){ //trying to pass left wall case
+                return collisionDetector( this.width-2, y);
+            }
+            else if(x==this.width-1){ //trying to pass right wall case
+                return collisionDetector(1, y);
+            }
+            else if(y==0){ //trying to pass top wall case
+                return collisionDetector(x, this.height-2);
+            }
+            else if(y==this.height-1){ //trying to pass bottom wall case
+                return collisionDetector(x, 1);
+            }
+            else{
+                return false;
+            }
         }
-        else if(this.tab[y][x].getCollision() == true || y==0 || y==this.height-1 ){ 
-            return false;
-        }
+        
         return true;
+        
     }
     /**
      * Function that change the coordonate of the player on the map if the case is available
@@ -318,7 +337,10 @@ public class Map {
         switch(m){
             case DROITE:
                 if(collisionDetector(this.x+1, this.y)){
-                    this.x += 1;
+                    this.x = (this.x+1)%(this.width-1);
+                    if(this.x ==0){
+                        this.x++;
+                    }
                     this.eventManager();
                 }
                 else{
@@ -328,6 +350,10 @@ public class Map {
             case GAUCHE:
                 if(collisionDetector(this.x-1, this.y)){
                     this.x -= 1;
+                    if(this.x==0){
+                        this.x = this.width-2;
+                    }
+                    
                     this.eventManager();
                 }
                 else{
@@ -336,7 +362,10 @@ public class Map {
                 break;
             case BAS:
                 if(collisionDetector(this.x, this.y+1)){
-                    this.y += 1;
+                    this.y = (this.y+1)%(this.height-1);
+                    if(this.y == 0){
+                        this.y++;
+                    }
                     this.eventManager();
                 }
                 else{
@@ -346,6 +375,9 @@ public class Map {
             case HAUT:
                 if(collisionDetector(this.x, this.y-1)){
                     this.y -= 1;
+                    if(this.y==0){
+                        this.y = this.height-2;
+                    }
                     this.eventManager();
                 }
                 else{

@@ -104,6 +104,19 @@ public class Cellule{
     public boolean getCollision(){
         return this.collision;
     }
+
+    /**
+     * Function that turn to true or false the collison value
+     */
+    public void activateCollision(){
+        if(this.collision == true){
+            this.collision = false;
+        }
+        else{
+            this.collision = true;
+        }
+    }
+
 }
 
 
