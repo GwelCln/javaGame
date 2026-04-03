@@ -9,4 +9,4 @@
 # fi
 
 
-java -jar javaGame.jar "save/map1.txt" "save/map2.txt" "save/map3.txt"
+java -jar javaGame.jar "save/map2.txt" "save/map1.txt" "save/map3.txt"
