@@ -12,7 +12,6 @@ public class Ghost extends Enemy{
 
     private static int numberOfGhost=0;
 
-
     public Ghost(String name, int x, int y){
 
         super(name, x, y);
@@ -79,7 +78,7 @@ public class Ghost extends Enemy{
         Event e = new Event();
         switch(mv){
             case DROITE:
-                if(e.enemyCollisionDetector(m, this.x+1, this.y) == false)
+                if(e.enemyCollisionDetector(m, this.x+1, this.y) == false){}
                 this.x = (this.x+1)%m.getWidth();
                 break;
             case GAUCHE:

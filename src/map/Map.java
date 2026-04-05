@@ -132,6 +132,11 @@ public class Map {
                     this.occupiedCells.add(this.tab[yEnemy][xEnemy]); // on mémorise la cellule occupée
                     enemyNumber++;
                 }
+                else if(enemyNumber == 1){
+                    this.e[enemyNumber] = new Hunter("LE HUNTEEEEER n°" + (enemyNumber+1), xEnemy, yEnemy); // enemy initialization
+                    this.occupiedCells.add(this.tab[yEnemy][xEnemy]); // on mémorise la cellule occupée
+                    enemyNumber++;
+                }
                 else{
                     this.e[enemyNumber] = new Enemy("Job application n°" + (enemyNumber+1), xEnemy, yEnemy); // enemy initialization
                     this.occupiedCells.add(this.tab[yEnemy][xEnemy]); // on mémorise la cellule occupée
@@ -218,7 +223,8 @@ public class Map {
             int[] mapValue = new int[4];
             int nbEnemy = Integer.parseInt(st[2]);
             int nbGhost = Integer.parseInt(st[3]);
-            int totalEnemy = nbEnemy + nbGhost;
+            int nbHunter = Integer.parseInt(st[4]);
+            int totalEnemy = nbEnemy + nbGhost + nbHunter;
             
             while ((ligne=br.readLine())!=null){
 
@@ -271,6 +277,9 @@ public class Map {
                         if(this.e[k].getX() == j && this.e[k].getY() == i && printed == false){
                             if(this.e[k] instanceof Ghost g){
                                 System.out.print('G');
+                            }
+                            else if(this.e[k] instanceof Hunter h){
+                                System.out.print('C');
                             }
                             else{
                                 System.out.print('R');
@@ -428,6 +437,16 @@ public class Map {
         }
     }
 
+    public int getEnemyDamage(int n) throws EnemyIndexOutOfBound{ 
+        
+        if(n>this.e[0].getNumberOfEnemy()){
+            throw new EnemyIndexOutOfBound("Erreur : index donner trop élever.");
+        }
+        else{
+            return this.e[n].getDamage();
+        }
+
+    }
 
    /**
      * Method that returns true if a cell at (x,y) is occupied by an enemy.

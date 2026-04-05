@@ -115,13 +115,13 @@ public class Event{
         
         
         if(m.enemyOnCell(m.getPlayerX(), m.getPlayerY())){
-            m.updatePlayerHP(-1);
             int total = m.getNumberOfEnemy();
             for(int i=0;i<total;i++){
                 if(m.getPlayerX() == m.getEnemyX(i) && m.getPlayerY() == m.getEnemyY(i)){
+                    m.updatePlayerHP(m.getEnemyDamage(i));
                     System.out.println("Oh no ! " + m.getEnemyName(i) + " hit you...");
                     m.resetEnemyPosition(i);
-                    break;
+                    break; // note si plusieur enemies sur la même case seulement un fais des dégâts
                 }
             }
       

@@ -16,7 +16,7 @@ public class Enemy extends Entity {
     private static int numberOfEnemy=0;
     protected int originX;
     protected int originY;
-
+    protected int damage=-1;
     /**
      * Constructor function, build the Enemy. 
      * @param name Name given to the Enemy
@@ -63,6 +63,7 @@ public class Enemy extends Entity {
      */
     public int getOriginY(){ return this.originY; }
 
+    public int getDamage(){ return this.damage; }
 
     public void resetPosition(){
         this.x = originX;
@@ -72,6 +73,7 @@ public class Enemy extends Entity {
     public static void resetEnemyNumber(){
         numberOfEnemy =0;
     }
+
 
 
     /**
