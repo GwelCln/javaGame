@@ -46,7 +46,7 @@ public class Map {
      * @throws OutOfMapException If the coordonate (x,y) are on or out of the map's walls
      * @throws PlayerNullException If a player passed in argument is null this exception is raised.
      */
-    public Map(int height, int width, Player p, int totalEnemy, Structure[] struct) throws NotAllowedSizeException, PlayerNullException{ // OutOfMapException,
+    public Map(int height, int width, Player p, int totalEnemy, int[] enemyTab, Structure[] struct) throws NotAllowedSizeException, PlayerNullException{ // OutOfMapException,
         if(width <3 || height<3){
             throw new NotAllowedSizeException("Erreur dans les arguments la map ne peut pas être initialiser.");
         }
@@ -122,23 +122,30 @@ public class Map {
 
         int enemyNumber =0;
 
+        int jobApplicationNumber = enemyTab[0];
+        int ghostNumber = enemyTab[1];
+        int hunterNumber = enemyTab[2];
+
         while(enemyNumber!=totalEnemy){
             int xEnemy = 1 + (int) ( Math.random() * this.getWidth()-2);
             int yEnemy = 1 + (int) ( Math.random() * this.getHeight()-2);
             
+            
+
             if((this.tab[yEnemy][xEnemy].getType() == Type.VIDE) && ((yEnemy != this.p.getY())&& (xEnemy != this.p.getX())) ){
-                if(enemyNumber == 0){
+                if(enemyNumber < jobApplicationNumber){
+                    this.e[enemyNumber] = new Enemy("Job application n°" + (enemyNumber+1), xEnemy, yEnemy); // enemy initialization
+                    this.occupiedCells.add(this.tab[yEnemy][xEnemy]); // on mémorise la cellule occupée
+                    enemyNumber++;    
+                }
+                else if(enemyNumber >= jobApplicationNumber && enemyNumber < jobApplicationNumber+ghostNumber){
                     this.e[enemyNumber] = new Ghost("Puppet master n°" + (enemyNumber+1), xEnemy, yEnemy); // enemy initialization
                     this.occupiedCells.add(this.tab[yEnemy][xEnemy]); // on mémorise la cellule occupée
                     enemyNumber++;
-                }
-                else if(enemyNumber == 1){
-                    this.e[enemyNumber] = new Hunter("LE HUNTEEEEER n°" + (enemyNumber+1), xEnemy, yEnemy); // enemy initialization
-                    this.occupiedCells.add(this.tab[yEnemy][xEnemy]); // on mémorise la cellule occupée
-                    enemyNumber++;
+                    
                 }
                 else{
-                    this.e[enemyNumber] = new Enemy("Job application n°" + (enemyNumber+1), xEnemy, yEnemy); // enemy initialization
+                    this.e[enemyNumber] = new Hunter("LE HUNTEEEEER n°" + (enemyNumber+1), xEnemy, yEnemy); // enemy initialization
                     this.occupiedCells.add(this.tab[yEnemy][xEnemy]); // on mémorise la cellule occupée
                     enemyNumber++;
                 }
@@ -221,9 +228,13 @@ public class Map {
             Structure[] structTab = new Structure[Integer.parseInt(st[1])];
             int structIndex=0;
             int[] mapValue = new int[4];
+            int[] enemyTab = new int[3];
             int nbEnemy = Integer.parseInt(st[2]);
+            enemyTab[0] = nbEnemy;
             int nbGhost = Integer.parseInt(st[3]);
+            enemyTab[1] = nbGhost;
             int nbHunter = Integer.parseInt(st[4]);
+            enemyTab[2] = nbHunter;
             int totalEnemy = nbEnemy + nbGhost + nbHunter;
             
             while ((ligne=br.readLine())!=null){
@@ -242,7 +253,7 @@ public class Map {
             }
             br.close(); 
 
-            return new Map(mapValue[0], mapValue[1], p, totalEnemy, structTab);
+            return new Map(mapValue[0], mapValue[1], p, totalEnemy, enemyTab, structTab);
         }     
         catch(IOException e){
             System.err.println(e.getMessage());
